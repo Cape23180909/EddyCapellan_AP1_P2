@@ -1,0 +1,71 @@
+﻿@page "/Registro/Index"
+@inject RegistroService registroServices
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<div class="container">
+    <div class="card shadow-lg mt-3">
+        <div class="card-header text-center">
+            <h5>Registros</h5>
+        </div>
+
+        <div class="card-body">
+          @*   <div class="row md-3 align-content-lg-center">
+                <div class="col-md-3">
+                    <label for="filtro" class="form-label"><strong>Filtrar Por:</strong></label>
+                    <select @* @bind ="" class="form-select">
+                        <option value="id">ResgitroId</option>
+                        <option value="Nombre">Nombre</option>
+                        <option value="Descripcion">Descripcion</option>
+                    </select>
+                </div>
+
+                <div class="col-md-5">
+                    <label for="valorfiltro" class="form-label"><strong>Busqueda:</strong></label>
+                    <div class="input-group">
+                        <input@bind ="" class="form-control" />
+                        <button type="button" class="btn btn-outline-primary">
+                            <span class="bi bi-search mt-3"></span>
+                            Buscar
+                        </button>
+                    </div>
+                </div> *@
+
+                <div class="row">
+                    <div class="col-md-15">
+                        <div class="col-md-15 text-end">
+                            <a href="/create" class="btn btn-outline-success" type="button">
+                                <span class="bi bi-pencil-square mt-3"></span>
+                                Crear
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-light table-bordered text-center">
+                    <thead class="table table-striped ">
+                        <tr>
+                            <th>Id</th>
+                            <th>Ver</th>
+                            <th>Modificar</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                       
+                    </tbody>
+                </table>
+
+            </div>
+
+            <div class="card-footer">
+                <p>Total:.Count</p>
+            </div>
+        </div>
+
+    </div>
+@* </div> *@
+
+@code {
+   
+}

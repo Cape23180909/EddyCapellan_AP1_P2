@@ -3,6 +3,8 @@ using EddyCapellan_AP1_P2.DAL;
 using EddyCapellan_AP1_P2.Services;
 using Microsoft.EntityFrameworkCore;
 
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,6 +15,8 @@ var ConStr = builder.Configuration.GetConnectionString("ConStr");
 builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
 
 builder.Services.AddScoped<RegistroService>();
+builder.Services.AddBootstrapBlazor();
+
 
 var app = builder.Build();
 
