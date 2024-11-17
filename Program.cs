@@ -15,7 +15,7 @@ var ConStr = builder.Configuration.GetConnectionString("ConStr");
 builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
 
 builder.Services.AddScoped<RegistroService>();
-builder.Services.AddBootstrapBlazor();
+builder.Services.AddBlazorBootstrap();
 
 
 var app = builder.Build();
