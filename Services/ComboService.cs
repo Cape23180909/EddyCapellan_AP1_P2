@@ -57,7 +57,6 @@ public class ComboService(IDbContextFactory<Contexto> DbFactory)
             .FirstOrDefaultAsync( c =>c.ComboId == id);
 
     }
-
     public async Task<List<Combos>> Listar(Expression<Func<Combos, bool>> criterio)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
@@ -65,5 +64,13 @@ public class ComboService(IDbContextFactory<Contexto> DbFactory)
             .AsNoTracking()
             .Where(criterio)
             .ToListAsync();
+    }
+    public async Task<Combos> ObtenerPorId(int comboId)
+    {
+        await using var contexto = await DbFactory.CreateDbContextAsync();
+ 
+        return await contexto.Combos
+            .Include(c => c.comboDetalle) 
+            .FirstOrDefaultAsync(c => c.ComboId == comboId);
     }
 }
