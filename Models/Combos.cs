@@ -16,5 +16,4 @@ public class Combos
 
     public List<CombosDetalle> comboDetalle { get; set; } = new List<CombosDetalle>();
 
-
 }
