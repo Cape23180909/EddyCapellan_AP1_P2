@@ -20,10 +20,4 @@ public class CombosDetalle
     public int? Cantidad { get; set; }
     [Required(ErrorMessage = "Favor colocar el costo")]
     public decimal? Costo { get; set; }
-
-
 }
-
-
-
-//CombosDetalle(DetalleId, ComboId, ArticuloId, Cantidad, Costo)
