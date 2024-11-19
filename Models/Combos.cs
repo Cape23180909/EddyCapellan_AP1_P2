@@ -13,7 +13,5 @@ public class Combos
     [Required(ErrorMessage = "Favor colocar el precio")]
     public int? Precio { get; set; }
     public bool Vendido { get; set; }
-
     public List<CombosDetalle> comboDetalle { get; set; } = new List<CombosDetalle>();
-
 }
