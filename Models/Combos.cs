@@ -9,9 +9,9 @@ public class Combos
     [Required(ErrorMessage = "Favor colocar la fecha")]
     public DateTime? Fecha { get; set; }
     [Required(ErrorMessage = "Favor colocar la descripcion")]
-    public string Descripcion { get; set; }
+    public string? Descripcion { get; set; }
     [Required(ErrorMessage = "Favor colocar el precio")]
-    public int Precio { get; set; }
+    public int? Precio { get; set; }
     public bool Vendido { get; set; }
 
     public List<CombosDetalle> comboDetalle { get; set; } = new List<CombosDetalle>();

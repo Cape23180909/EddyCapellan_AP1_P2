@@ -38,14 +38,14 @@
         @*Precio*@
         <div class="mb-3">
             <label for="Precio" class="form-label">Precio:</label>
-            <InputNumber @bind-Value="combo.Precio" />
+            <InputNumber @bind-Value="combo.Precio" class="form-control" />
             <ValidationMessage For="@(() => combo.Precio)" />
         </div>
 
         @*Vendido*@
         <div class="mb-3">
             <label for="Vendido" class="form-label">Vendido:</label>
-            <InputCheckbox @bind-Value="combo.Vendido" class="form-control" />
+            <InputCheckbox @bind-Value="combo.Vendido" class="form-check" />
             <ValidationMessage For="@(() => combo.Vendido)" />
         </div>
     </div>
@@ -60,7 +60,7 @@
 
             <div class="col col-sm-4 p-0">
                 <label for="ArticuloId" class="form-label">ArticuloId</label>
-                <InputSelect @bind-Value="combodetalle.ArticuloId" class="form-control">
+                <InputSelect @bind-Value="combodetalle.ArticuloId" class="form-select">
                     <option value="0">Seleccione un Articulo:</option>
                     @foreach (var articulo in listaarticulo)
                     {
@@ -85,7 +85,7 @@
                 <ValidationMessage For="@(() => combodetalle.Costo)" />
             </div>
             <div class=" col-sm-2 p-0">
-                <button type="button" @onclick="AgregarDetalle"><span class="bi bi-plus"></span>Agregar</button>
+                <button type="button" class="btn btn-outline-success" @onclick="AgregarDetalle"><span class="bi bi-plus"></span>Agregar</button>
             </div>
         </div>
 
@@ -120,9 +120,9 @@
         </div>
     </div>
     <div class="card-footer text-center">
-        <button type="button" class="btn btn-primary" @onclick="Nuevo">Nuevo</button>
-        <button type="submit" class="btn btn-primary">Guardar</button>
-        <button type="button" class="btn btn-secondary" @onclick="Volver">Volver</button>
+        <button type="button" class="btn btn-outline-primary" @onclick="Nuevo">Nuevo</button>
+        <button type="submit" class="btn btn-outline-success">Guardar</button>
+        <button type="button" class="btn btn-outline-danger" @onclick="Volver">Volver</button>
     </div>
 </EditForm>
 
