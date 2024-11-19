@@ -1,0 +1,188 @@
+﻿@using EddyCapellan_AP1_P2.Models
+@page "/Combo/Create"
+@inject ArticuloService articuloService
+@inject ComboService comboService
+@inject NavigationManager navigationManager
+@inject ToastService toastService
+
+<PageTitle>Registrar Combo</PageTitle>
+
+<EditForm Model="combo" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="card shadow-lg mt-3">
+        <h5 class="card-header text-center">Registrar Combo</h5>
+    </div>
+
+    <div class="card-body">
+
+        @*ComboId*@
+        <div class="mb-3">
+            <label for="ComboId" class="form-label">ComboId:</label>
+            <InputNumber @bind-Value="combo.ComboId" class="form-control" readonly />
+        </div>
+
+        @*Fecha*@
+        <div class="mb-3">
+            <label for="Fecha" class="form-label">Fecha:</label>
+            <InputDate @bind-Value="combo.Fecha" class="form-control" />
+            <ValidationMessage For="@(() => combo.Fecha)" />
+        </div>
+
+        @* Descripción *@
+        <div class="mb-3">
+            <label for="Descripcion" class="form-label">Descripción:</label>
+            <InputText @bind-Value="combo.Descripcion" class="form-control" />
+            <ValidationMessage For="@(() => combo.Descripcion)" />
+        </div>
+
+        @*Precio*@
+        <div class="mb-3">
+            <label for="Precio" class="form-label">Precio:</label>
+            <InputNumber @bind-Value="combo.Precio" />
+            <ValidationMessage For="@(() => combo.Precio)" />
+        </div>
+
+        @*Vendido*@
+        <div class="mb-3">
+            <label for="Vendido" class="form-label">Vendido:</label>
+            <InputCheckbox @bind-Value="combo.Vendido" class="form-control" />
+            <ValidationMessage For="@(() => combo.Vendido)" />
+        </div>
+    </div>
+
+    @* Detalles del Cobro *@
+    <div class="card mt-4 border-success">
+        <div class="card-header">
+            <h3 class="mb-0 fw-bold">Cobro Detalle</h3>
+        </div>
+
+        <div class="card-body">
+
+            
+
+
+
+
+
+
+
+
+        </div>
+
+        @*  Tabla de Detalles *@
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>ArticuloId</th>
+                        <th>Cantidad</th>
+                        <th>Costo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detalle in listacombodetalle)
+                    {
+                        <tr>
+                            <td>@detalle.ArticuloId</td>
+                            <td>@detalle.Cantidad</td>
+                            <td>@detalle.Costo</td>
+                            <td>
+                                <button type="button" class="btn btn-outline-dark" @onclick="() => EliminarDetalle(detalle)">
+                                    <span class="bi bi-trash"></span> Remover
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer text-center">
+        <button type="button" class="btn btn-primary" @onclick="Nuevo">Nuevo</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button type="button" class="btn btn-secondary" @onclick="Volver">Volver</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int ComboId { get; set; }
+    public Combos combo { get; set; } = new Combos();
+    public CombosDetalle combodetalle { get; set; } = new CombosDetalle();
+    public List<Articulos> listaarticulo { get; set; } = new List<Articulos>();
+    public List<CombosDetalle> listacombodetalle { get; set; } = new List<CombosDetalle>();
+    private bool Existe = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaarticulo = await articuloService.Listar(c => true);
+    }
+
+    public async Task Nuevo()
+    {
+        Existe = false;
+        combo = new Combos();
+    }
+    public async Task Buscar()
+    {
+        var encontrado = await comboService.Buscar(combo.ComboId);
+        if (encontrado != null)
+        {
+            return;
+        }
+        else
+        {
+            Nuevo();
+        }
+
+    }
+    public async Task<bool> Validar()
+    {
+        Existe = await comboService.Existe(combo.ComboId);
+        return Existe;
+    }
+
+    public async Task Guardar()
+    {
+        if (await Validar())
+        {
+            return;
+        }
+        combo.comboDetalle = listacombodetalle;
+        var guardo = await comboService.Guardar(combo);
+        if (guardo)
+        {
+            toastService.Notify(new(ToastType.Success,
+            iconName: IconName.None,
+            title: "Validacion",
+            helpText: "",
+            message: "El combo se a guardado correctamente."));
+            Volver();
+        }
+    }
+    public async Task Volver()
+    {
+        navigationManager.NavigateTo("/Combos/Index");
+    }
+
+    public async Task AgregarDetalle()
+    {
+        listacombodetalle.Add(new CombosDetalle
+            {
+                ComboId = combo.ComboId,
+                ArticuloId = combodetalle.ArticuloId,
+                Cantidad = combodetalle.Cantidad,
+                Costo = combodetalle.Costo
+            });
+
+        combodetalle = new CombosDetalle();
+    }
+
+    public void EliminarDetalle(CombosDetalle detalle)
+    {
+        listacombodetalle.Remove(detalle);
+    }
+}
