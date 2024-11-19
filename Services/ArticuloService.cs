@@ -2,6 +2,7 @@
 using EddyCapellan_AP1_P2.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using System.Net.Http;
 
 namespace EddyCapellan_AP1_P2.Services;
 
@@ -13,7 +14,6 @@ public class ArticuloService(IDbContextFactory<Contexto> DbFactory)
         return await contexto.Combos.AnyAsync(c => c.ComboId == articuloid);
 
     }
-
     public async Task<bool> Insertar(Articulos articulo)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
@@ -35,7 +35,6 @@ public class ArticuloService(IDbContextFactory<Contexto> DbFactory)
         else
             return await Modificar(articulo);
     }
-
     public async Task<bool> Eliminar(int id)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
@@ -62,5 +61,23 @@ public class ArticuloService(IDbContextFactory<Contexto> DbFactory)
             .AsNoTracking()
             .Where(criterio)
             .ToListAsync();
+    }
+    public async Task RestaurarCantidad(int articuloId, int cantidad)
+    {
+        // Usamos DbContext para acceder a la base de datos
+        await using var contexto = await DbFactory.CreateDbContextAsync();
+
+        // Buscar el artículo en la base de datos por su Id
+        var articulo = await contexto.Articulos
+        .FirstOrDefaultAsync(a => a.ArticuloId == articuloId);
+
+        // Si el artículo existe
+        if (articulo != null)
+        {
+            articulo.Costo += cantidad;
+
+            contexto.Articulos.Update(articulo);
+            await contexto.SaveChangesAsync();
+        }
     }
 }
