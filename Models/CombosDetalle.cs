@@ -9,7 +9,7 @@ public class CombosDetalle
     [Key]
     public int DetalleId { get; set; }
     [Required(ErrorMessage ="Favor colocar combo")]
-    public int? ComboId { get; set; }
+    public int ComboId { get; set; }
     [ForeignKey("ComboId")]
     public Combos combos { get; set; }
     [Required(ErrorMessage = "Favor colocar el articulo")]

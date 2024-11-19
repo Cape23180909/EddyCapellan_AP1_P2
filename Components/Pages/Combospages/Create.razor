@@ -1,5 +1,4 @@
-﻿@using EddyCapellan_AP1_P2.Models
-@page "/Combo/Create"
+﻿@page "/Combo/Create"
 @inject ArticuloService articuloService
 @inject ComboService comboService
 @inject NavigationManager navigationManager
@@ -9,7 +8,6 @@
 
 <EditForm Model="combo" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
-    <ValidationSummary />
 
     <div class="card shadow-lg mt-3">
         <h5 class="card-header text-center">Registrar Combo</h5>
@@ -60,16 +58,37 @@
 
         <div class="card-body">
 
-            
+            <div class="col col-sm-4 p-0">
+                <label for="ArticuloId" class="form-label">ArticuloId</label>
+                <InputSelect @bind-Value="combodetalle.ArticuloId" class="form-control">
+                    <option value="0">Seleccione un Articulo:</option>
+                    @foreach (var articulo in listaarticulo)
+                    {
+                        <option value="@articulo.ArticuloId">@articulo.Descripcion</option>
+                    }
 
+                </InputSelect>
+                <ValidationMessage For="@(() => articulos.ArticuloId)" />
+            </div>
 
+            @*Cantidad*@
+            <div class="col col-sm-6 p-0 ms-2">
+                <label for="Precio" class="form-label">Cantidad:</label>
+                <InputNumber @bind-Value="combodetalle.Cantidad" />
+                <ValidationMessage For="@(() => combodetalle.Cantidad)" />
+            </div>
 
-
-
-
-
-
+            @*Costo*@
+            <div class="mb-3">
+                <label for="Precio" class="form-label">Costo:</label>
+                <InputNumber @bind-Value="combodetalle.Costo" />
+                <ValidationMessage For="@(() => combodetalle.Costo)" />
+            </div>
+            <div class=" col-sm-2 p-0">
+                <button type="button" @onclick="AgregarDetalle"><span class="bi bi-plus"></span>Agregar</button>
+            </div>
         </div>
+
 
         @*  Tabla de Detalles *@
         <div class="table-responsive mt-3">
@@ -111,6 +130,7 @@
     [Parameter]
     public int ComboId { get; set; }
     public Combos combo { get; set; } = new Combos();
+    public Articulos articulos { get; set; } = new Articulos();
     public CombosDetalle combodetalle { get; set; } = new CombosDetalle();
     public List<Articulos> listaarticulo { get; set; } = new List<Articulos>();
     public List<CombosDetalle> listacombodetalle { get; set; } = new List<CombosDetalle>();
@@ -151,7 +171,7 @@
         {
             return;
         }
-        combo.comboDetalle = listacombodetalle;
+        // combo.comboDetalle = listacombodetalle;
         var guardo = await comboService.Guardar(combo);
         if (guardo)
         {
