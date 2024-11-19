@@ -1,0 +1,236 @@
+﻿@page "/Combo/Create"
+@inject ArticuloService articuloService
+@inject ComboService comboService
+@inject NavigationManager navigationManager
+@inject ToastService toastService
+
+<PageTitle>Registrar Combo</PageTitle>
+
+<EditForm Model="combo" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="card shadow-lg mt-3">
+        <h5 class="card-header text-center">Registrar Combo</h5>
+    </div>
+
+    <div class="card-body">
+
+        @*ComboId*@
+        <div class="mb-3">
+            <label for="ComboId" class="form-label">ComboId:</label>
+            <InputNumber @bind-Value="combo.ComboId" class="form-control" readonly />
+        </div>
+
+        @*Fecha*@
+        <div class="mb-3">
+            <label for="Fecha" class="form-label">Fecha:</label>
+            <InputDate @bind-Value="combo.Fecha" class="form-control" />
+            <ValidationMessage For="@(() => combo.Fecha)" />
+        </div>
+
+        @* Descripción *@
+        <div class="mb-3">
+            <label for="Descripcion" class="form-label">Descripción:</label>
+            <InputText @bind-Value="combo.Descripcion" class="form-control" />
+            <ValidationMessage For="@(() => combo.Descripcion)" />
+        </div>
+
+        @*Precio*@
+        <div class="mb-3">
+            <label for="Precio" class="form-label">Precio:</label>
+            <InputNumber @bind-Value="combo.Precio" class="form-control" />
+            <ValidationMessage For="@(() => combo.Precio)" />
+        </div>
+
+        @*Vendido*@
+        <div class="mb-3">
+            <label for="Vendido" class="form-label">Vendido:</label>
+            <InputCheckbox @bind-Value="combo.Vendido" class="form-check" />
+            <ValidationMessage For="@(() => combo.Vendido)" />
+        </div>
+    </div>
+
+    @* Detalles del Cobro *@
+    <div class="card mt-4 border-success shadow-sm">
+        <div class="card-header ">
+            <h5 class="card-title">Detalles del Combo</h5>
+        </div>
+
+        <div class="card-body">
+            @*Articulos*@
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="ArticuloId" class="form-label fw-bold">Artículo</label>
+                    <InputSelect @bind-Value="combodetalle.ArticuloId" class="form-select shadow-sm">
+                        <option value="0">Seleccione un Artículo</option>
+                        @foreach (var articulo in listaarticulo)
+                        {
+                            <option value="@articulo.ArticuloId">@articulo.Descripcion</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => combodetalle.ArticuloId)" />
+                </div>
+                @*Cantidad*@
+                <div class="col-md-3">
+                    <label for="Cantidad" class="form-label fw-bold">Cantidad</label>
+                    <InputNumber @bind-Value="combodetalle.Cantidad" class="form-control shadow-sm" />
+                    <ValidationMessage For="@(() => combodetalle.Cantidad)" />
+                </div>
+                @*Costo*@
+                <div class="col-md-3">
+                    <label for="Costo" class="form-label fw-bold">Costo</label>
+                    <InputNumber @bind-Value="combodetalle.Costo" class="form-control shadow-sm" />
+                    <ValidationMessage For="@(() => combodetalle.Costo)" />
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-outline-success" @onclick="AgregarDetalle">
+                        <span class="bi bi-plus-lg"></span> Agregar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        @* Tabla de Detalles *@
+        <div class="table-responsive mt-4">
+            <table class="table table-hover table-bordered align-middle text-center shadow-sm">
+                <thead class="table">
+                    <tr>
+                        <th>Artículo</th>
+                        <th>Cantidad</th>
+                        <th>Costo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detalle in listacombodetalle)
+                    {
+                        <tr>
+                            <td>
+                                @listaarticulo.FirstOrDefault(a => a.ArticuloId == detalle.ArticuloId)?.Descripcion
+                            </td>
+                            <td>@detalle.Cantidad</td>
+                            <td>@detalle.Costo</td>
+                            <td>
+                                <button type="button" class="btn btn-outline-danger btn-sm shadow-sm" @onclick="() => EliminarDetalle(detalle)">
+                                    <span class="bi bi-trash"></span> Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer text-center">
+        <button type="button" class="btn btn-outline-primary" @onclick="Nuevo">Nuevo</button>
+        <button type="submit" class="btn btn-outline-success">Guardar</button>
+        <button type="button" class="btn btn-outline-danger" @onclick="Volver">Volver</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int ComboId { get; set; }
+    public Combos combo { get; set; } = new Combos();
+    public Articulos articulos { get; set; } = new Articulos();
+    public CombosDetalle combodetalle { get; set; } = new CombosDetalle();
+    public List<Articulos> listaarticulo { get; set; } = new List<Articulos>();
+    public List<CombosDetalle> listacombodetalle { get; set; } = new List<CombosDetalle>();
+    private bool Existe = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaarticulo = await articuloService.Listar(c => true);
+    }
+
+    public async Task Nuevo()
+    {
+        Existe = false;
+        combo = new Combos();
+    }
+    public async Task Buscar()
+    {
+        var encontrado = await comboService.Buscar(combo.ComboId);
+        if (encontrado != null)
+        {
+            combo = encontrado;
+            listacombodetalle = combo.comboDetalle ?? new List<CombosDetalle>();
+        }
+        else
+        {
+            Nuevo();
+        }
+        StateHasChanged();
+    }
+    public async Task<bool> Validar()
+    {
+        Existe = await comboService.Existe(combo.ComboId);
+        return Existe;
+    }
+
+    public async Task Guardar()
+    {
+        if (!listacombodetalle.Any())
+        {
+            toastService.Notify(new(ToastType.Success, "Debe agregar al menos un detalle al combo."));
+            return;
+        }
+        if (await Validar())
+        {
+            return;
+        }
+        combo.comboDetalle = listacombodetalle;
+        var guardo = await comboService.Guardar(combo);
+        if (guardo)
+        {
+            toastService.Notify(new(ToastType.Success,
+            iconName: IconName.None,
+            title: "Validacion",
+            helpText: "",
+            message: "El combo se a guardado correctamente. Con Su detalle Incluido"));
+            Volver();
+        }
+    }
+    public async Task Volver()
+    {
+        navigationManager.NavigateTo("/Combos/Index");
+    }
+
+    public async Task AgregarDetalle()
+    {
+
+        if (combodetalle.ArticuloId == null || combodetalle.ArticuloId == 0)
+        {
+            toastService.Notify(new(ToastType.Success, "Error", "Seleccione un artículo."));
+            return;
+        }
+
+        if (combodetalle.Cantidad == null || combodetalle.Cantidad <= 0)
+        {
+            toastService.Notify(new(ToastType.Success, "Error", "Ingrese una cantidad válida."));
+            return;
+        }
+
+        if (combodetalle.Costo == null || combodetalle.Costo <= 0)
+        {
+            toastService.Notify(new(ToastType.Success, "Error", "Ingrese un costo válido."));
+            return;
+        }
+        listacombodetalle.Add(new CombosDetalle
+            {
+                ComboId = combo.ComboId,
+                ArticuloId = combodetalle.ArticuloId,
+                Cantidad = combodetalle.Cantidad,
+                Costo = combodetalle.Costo
+            });
+
+        combodetalle = new CombosDetalle();
+    }
+
+    public void EliminarDetalle(CombosDetalle detalle)
+    {
+        listacombodetalle.Remove(detalle);
+        StateHasChanged();
+    }
+}

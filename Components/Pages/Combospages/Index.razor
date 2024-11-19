@@ -1,0 +1,126 @@
+﻿@page "/Combos/Index"
+@using EddyCapellan_AP1_P2.Models
+@inject ComboService comboService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Consulta de combos</PageTitle>
+<div class="container">
+    <div class="card shadow-lg mt-3">
+        <div class="card-header text-center">
+            <h5>Consulta de combos</h5>
+        </div>
+
+        <div class="row">
+            <div class="col-md-15">
+                <div class="col-md-15 text-end">
+                    <a href="/Combo/Create" class="btn btn-outline-success" type="button">
+                        <span class="bi bi-pencil-square mt-3"></span>
+                        Crear
+                    </a>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-lg-center">
+                <div class="col md-3">
+                    <label for="filtro" class="form-label">Filtrar por:</label>
+                    <select @bind="filtro" class="form-select">
+                        <option value="ID">ComboId</option>
+                        <option value="Descripcion">Descripci&oacute;n</option>
+                    </select>
+                </div>
+
+                <div class="col md-6">
+                    <label for="valorFiltro" class="form-label">Busqueda:</label>
+                    <div class="input-group">
+                        <input @bind="valorFiltro" class="form-control" />
+                        <button type="button" @onclick="Buscar" class="btn btn-outline-primary">
+                            <span class="bi bi-search"></span> Buscar
+                        </button>
+                    </div>
+                </div>
+
+
+                <div class="card-body">
+
+                    <table class="table table-light table-bordered text-center">
+                        <thead class="table table-striped ">
+                            <tr>
+                                <th>ComboId</th>
+                                <th>Fecha</th>
+                                <th>Descripcion</th>
+                                <th>Precio</th>
+                                <th>vendido</th>
+                                <th>Ver</th>
+                                <th>Modificar</th>
+                                <th>Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var combo in listacombo)
+                            {
+                                <tr>
+                                    <td>@combo.ComboId</td>
+                                    <td>@combo.Fecha</td>
+                                    <td>@combo.Descripcion</td>
+                                    <td>@combo.Precio</td>
+                                    <td>@combo.Vendido</td>
+                                    <td>
+                                        <a href="/Combo/Details/@combo.ComboId" class="btn btn-outline-primary"><span class="bi bi-eye"></span>Ver</a>
+                                    </td>
+                                    <td>
+                                        <a href="/Combo/Edit/@combo.ComboId" class="btn btn-outline-primary"><span class="bi bi-pencil"></span>Editar</a>
+                                    </td>
+                                    <td>
+                                        <a href="/Combo/Delete/@combo.ComboId" class="btn btn-outline-primary"><span class="bi bi-trash"></span>Eliminar</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer text-start">
+                    <p>Total:@listacombo.Count</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@code {
+
+    public Combos combos { get; set; } = new Combos();
+    public List<Combos> listacombo { get; set; } = new List<Combos>();
+    public string filtro = "ID";
+    public string valorFiltro = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        listacombo = await comboService.Listar(c => true);
+    }
+
+
+    public async Task Buscar()
+    {
+        if (string.IsNullOrWhiteSpace(valorFiltro))
+        {
+            listacombo = await comboService.Listar(c => true);
+        }
+        else
+        {
+
+            if (filtro == "ID" && int.TryParse(valorFiltro, out int comboid))
+            {
+
+                listacombo = await comboService.Listar(c => c.ComboId == comboid);
+            }
+
+            else if (filtro == "Descripcion")
+            {
+                listacombo = await comboService.Listar(c => c.Descripcion.Contains(valorFiltro));
+            }
+        }
+    }
+}
