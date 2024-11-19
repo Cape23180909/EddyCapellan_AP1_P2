@@ -1,0 +1,106 @@
+﻿@page "/Combo/Details/{ComboId:int}"
+@inject ComboService comboService
+@inject ArticuloService articuloService
+@inject NavigationManager navigationManager
+
+<PageTitle>Detalles del Combo</PageTitle>
+
+@if (combo != null)
+{
+    <div class="container mt-4">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h5 class="card-title">Detalles del Combo</h5>
+            </div>
+
+            <div class="card-body">
+                <div class="mb-3 row">
+                    <div class="col-sm-6">
+                        <label for="ComboId" class="col-form-label">Combo Id:</label>
+                        <p class="form-control-plaintext">@combo.ComboId</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="Fecha" class="col-form-label">Fecha:</label>
+                        <p class="form-control-plaintext">@combo.Fecha?.ToString("dd/MM/yyyy")</p>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <div class="col-sm-6">
+                        <label for="Descripcion" class="col-form-label">Descripción:</label>
+                        <p class="form-control-plaintext">@combo.Descripcion</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="Precio" class="col-form-label">Precio:</label>
+                        <p class="form-control-plaintext">@combo.Precio</p>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <div class="col-sm-6">
+                        <label for="Vendido" class="col-form-label">Vendido:</label>
+                        <p class="form-control-plaintext">@combo.Vendido</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-lg mt-4 border-success">
+            <div class="card-header">
+                <h5 class="card-title">Detalles de Artículos en el Combo</h5>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th>Artículo</th>
+                                <th>Cantidad</th>
+                                <th>Costo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var detalle in listacombodetalle)
+                            {
+                                <tr>
+                                    <td>@listaarticulo.FirstOrDefault(a => a.ArticuloId == detalle.ArticuloId)?.Descripcion</td>
+                                    <td>@detalle.Cantidad</td>
+                                    <td>@detalle.Costo</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <a href="/Combos/Index" class="btn btn-primary">
+                    <span class="bi bi-arrow-left"></span> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int ComboId { get; set; }
+    public Combos combo { get; set; } = new Combos();
+    public List<Articulos> listaarticulo { get; set; } = new List<Articulos>();
+    public List<CombosDetalle> listacombodetalle { get; set; } = new List<CombosDetalle>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaarticulo = await articuloService.Listar(c => true);
+
+        if (ComboId != 0)
+        {
+            combo = await comboService.ObtenerPorId(ComboId);
+            if (combo != null)
+            {
+                listacombodetalle = combo.comboDetalle;
+            }
+        }
+    }
+}
