@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EddyCapellan_AP1_P2.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20241118233808_Combos")]
+    [Migration("20241119142539_Combos")]
     partial class Combos
     {
         /// <inheritdoc />
@@ -54,17 +54,26 @@ namespace EddyCapellan_AP1_P2.Migrations
                         new
                         {
                             ArticuloId = 1,
-                            Descripcion = "Monitor"
+                            Costo = 500m,
+                            Descripcion = "Monitor",
+                            Ganancia = 30m,
+                            Precio = 1000m
                         },
                         new
                         {
                             ArticuloId = 2,
-                            Descripcion = "Laptop"
+                            Costo = 50000m,
+                            Descripcion = "Laptop",
+                            Ganancia = 20m,
+                            Precio = 70000m
                         },
                         new
                         {
                             ArticuloId = 3,
-                            Descripcion = "Computadora"
+                            Costo = 30m,
+                            Descripcion = "Computadora",
+                            Ganancia = 15m,
+                            Precio = 25m
                         });
                 });
 
@@ -92,6 +101,59 @@ namespace EddyCapellan_AP1_P2.Migrations
                     b.HasKey("ComboId");
 
                     b.ToTable("Combos");
+                });
+
+            modelBuilder.Entity("EddyCapellan_AP1_P2.Models.CombosDetalle", b =>
+                {
+                    b.Property<int>("DetalleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DetalleId"));
+
+                    b.Property<int>("ArticuloId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ComboId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Costo")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("DetalleId");
+
+                    b.HasIndex("ArticuloId");
+
+                    b.HasIndex("ComboId");
+
+                    b.ToTable("CombosDetalle");
+                });
+
+            modelBuilder.Entity("EddyCapellan_AP1_P2.Models.CombosDetalle", b =>
+                {
+                    b.HasOne("EddyCapellan_AP1_P2.Models.Articulos", "Articulos")
+                        .WithMany()
+                        .HasForeignKey("ArticuloId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EddyCapellan_AP1_P2.Models.Combos", "combos")
+                        .WithMany("comboDetalle")
+                        .HasForeignKey("ComboId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Articulos");
+
+                    b.Navigation("combos");
+                });
+
+            modelBuilder.Entity("EddyCapellan_AP1_P2.Models.Combos", b =>
+                {
+                    b.Navigation("comboDetalle");
                 });
 #pragma warning restore 612, 618
         }
